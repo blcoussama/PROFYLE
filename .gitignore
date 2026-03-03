@@ -23,4 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 .env
-coverage
+
+# Local history and docs
+CLAUDE-CODE-CHAT-HISTORY/
+RAPPORT-LATEX/
