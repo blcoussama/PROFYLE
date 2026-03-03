@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==========================================
+// COMPANIES
+// ==========================================
+model Company {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  description String?
+  website     String?
+  location    String?
+  logoUrl     String?
+  ownerId     String   @db.Uuid // References MongoDB User._id
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  jobs Job[]
+
+  @@index([ownerId])
+  @@map("companies")
+}
+
+// ==========================================
+// JOBS
+// ==========================================
+model Job {
+  id              String   @id @default(uuid()) @db.Uuid
+  title           String
+  description     String
+  location        String
+  jobType         String
+  experienceLevel String
+  requirements    String[]
+  salaryType      String
+  salary          Json?
+  isOpen          Boolean  @default(true)
+  companyId       String   @db.Uuid
+  recruiterId     String   @db.Uuid // References MongoDB User._id
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  applications Application[]
+  savedBy      SavedJob[]
+
+  @@index([companyId])
+  @@index([recruiterId])
+  @@index([isOpen])
+  @@map("jobs")
+}
+
+// ==========================================
+// APPLICATIONS
+// ==========================================
+model Application {
+  id              String            @id @default(uuid()) @db.Uuid
+  jobId           String            @db.Uuid
+  applicantId     String            @db.Uuid // References MongoDB User._id
+  experienceYears Int
+  experienceLevel String
+  status          ApplicationStatus @default(PENDING)
+  withdrawnAt     DateTime?
+  expiresAt       DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, applicantId])
+  @@index([applicantId])
+  @@index([status])
+  @@map("applications")
+}
+
+// ==========================================
+// SAVED JOBS
+// ==========================================
+model SavedJob {
+  id        String   @id @default(uuid()) @db.Uuid
+  jobId     String   @db.Uuid
+  userId    String   @db.Uuid // References MongoDB User._id
+  createdAt DateTime @default(now())
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, userId])
+  @@index([userId])
+  @@map("saved_jobs")
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
