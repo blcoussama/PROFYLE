@@ -180,10 +180,16 @@ export const markMessagesAsRead = async (req, res) => {
 export const deleteMessage = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.userId;
     // Find the message by ID
     const message = await Message.findById(id);
     if (!message) {
       return res.status(404).json({ success: false, message: "Message not found" });
+    }
+
+    // Only the sender can delete their own message
+    if (message.senderId.toString() !== userId) {
+      return res.status(403).json({ success: false, message: "Unauthorized: You can only delete your own messages" });
     }
 
     // If the message has an image, attempt to delete it from Cloudinary.

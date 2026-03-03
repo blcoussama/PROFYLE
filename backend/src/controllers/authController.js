@@ -220,7 +220,6 @@ export const ForgotPassword = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Password reset link sent successfully to your email.",
-            resetToken: resetToken,
         });
     } catch (error) {
         return res.status(500).json({ success: false, message: "An error occurred while processing the request!"})
@@ -291,16 +290,13 @@ export const CheckAuth = async (req, res) => {
 
 export const RefreshToken = async (req, res) => {
     const refreshToken = req.cookies.RefreshToken || req.body.RefreshToken;
-    console.log("Refresh Token received:", refreshToken);
 
     try {
         if (!refreshToken) {
-            console.log("No refresh token provided");
             return res.status(401).json({ success: false, message: "Unauthorized: No refresh token provided." });
         }
 
         const user = await User.findOne({ refreshToken });
-        console.log("User found:", user);
 
         if (!user) {
             console.log("Invalid refresh token");

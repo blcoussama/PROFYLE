@@ -1,122 +1,111 @@
-import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE, APPLICATION_ACCEPTED_TEMPLATE, APPLICATION_REJECTED_TEMPLATE } from "./emailTemplates.js"
-import { sgMail, sender } from './sendgridConfig.js';
+import {
+    PASSWORD_RESET_REQUEST_TEMPLATE,
+    PASSWORD_RESET_SUCCESS_TEMPLATE,
+    VERIFICATION_EMAIL_TEMPLATE,
+    APPLICATION_ACCEPTED_TEMPLATE,
+    APPLICATION_REJECTED_TEMPLATE
+} from "./emailTemplates.js";
+import { transporter, sender } from './sendgridConfig.js';
 
 
-export const SendVerificationEmail = async(email, verificationToken ) => {
-    const msg = {
-        to: email, // Dynamic email address
-        from: sender,
-        subject: 'Verify Your Email',
-        html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationToken), // Dynamic content
-        category: "Email Verification",
-    };
-
+export const SendVerificationEmail = async (email, verificationToken) => {
     try {
-        await sgMail.send(msg);
-        console.log(`Verification Email sent successfully to: ${email}`);
+        await transporter.sendMail({
+            from: `"${sender.name}" <${sender.email}>`,
+            to: email,
+            subject: 'Verify Your Email - PROFYLE',
+            html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationToken),
+        });
+        console.log(`Verification email sent to: ${email}`);
     } catch (error) {
-        console.error("Error sending verification email", error);
+        console.error("Error sending verification email:", error.message);
         throw new Error(`Error sending verification email: ${error.message}`);
     }
-}
- 
-export const SendWelcomeEmail = async (email, username) => {
-    const msg = {
-        to: email, // Dynamic email address
-        from: sender,
-        subject: 'Welcome to Node.JS AUTH!',
-        html: ` 
-            <p>Hi ${username},</p>
-            <p>Welcome to Node.JS AUTH! We're excited to have you on board.</p>
-            <p>If you have any questions, feel free to reach out.</p>
-            <p>Best regards,<br />The Node.JS AUTH Team</p>
-        `,
-        category: "Welcome Email",
-    };
+};
 
+export const SendWelcomeEmail = async (email, username) => {
     try {
-        await sgMail.send(msg);
-        console.log(`Welcome Email sent successfully to: ${email}`);
+        await transporter.sendMail({
+            from: `"${sender.name}" <${sender.email}>`,
+            to: email,
+            subject: 'Welcome to PROFYLE!',
+            html: `
+                <p>Hi ${username},</p>
+                <p>Welcome to PROFYLE! We're excited to have you on board.</p>
+                <p>Start exploring job opportunities or posting your first job offer today.</p>
+                <p>If you have any questions, feel free to reach out.</p>
+                <p>Best regards,<br />The PROFYLE Team</p>
+            `,
+        });
+        console.log(`Welcome email sent to: ${email}`);
     } catch (error) {
-        console.error("Error sending welcome email", error);
+        console.error("Error sending welcome email:", error.message);
         throw new Error(`Error sending welcome email: ${error.message}`);
     }
 };
 
 export const SendPasswordResetEmail = async (email, resetURL) => {
-    const msg = {
-        to: email, // Dynamic email address
-        from: sender,
-        subject: 'Reset Your Password',
-        html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL), // Dynamic content
-        category: "Password Reset",
-    };
-
     try {
-        await sgMail.send(msg);
-        console.log(`Password Reset Email sent successfully to: ${email}`);
+        await transporter.sendMail({
+            from: `"${sender.name}" <${sender.email}>`,
+            to: email,
+            subject: 'Reset Your Password - PROFYLE',
+            html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
+        });
+        console.log(`Password reset email sent to: ${email}`);
     } catch (error) {
-        console.error("Error sending password reset email", error);
+        console.error("Error sending password reset email:", error.message);
         throw new Error(`Error sending password reset email: ${error.message}`);
     }
 };
 
 export const SendPasswordResetSuccessEmail = async (email) => {
-    const msg = {
-        to: email, // Dynamic email address
-        from: sender,
-        subject: 'Password Reset Successfully!',
-        html: PASSWORD_RESET_SUCCESS_TEMPLATE, // Static content
-        category: "Password Reset Success",
-    };
-
     try {
-        await sgMail.send(msg);
-        console.log(`Password Reset Success Email sent successfully to: ${email}`);
+        await transporter.sendMail({
+            from: `"${sender.name}" <${sender.email}>`,
+            to: email,
+            subject: 'Password Reset Successfully - PROFYLE',
+            html: PASSWORD_RESET_SUCCESS_TEMPLATE,
+        });
+        console.log(`Password reset success email sent to: ${email}`);
     } catch (error) {
-        console.error("Error sending password reset success email", error);
+        console.error("Error sending password reset success email:", error.message);
         throw new Error(`Error sending password reset success email: ${error.message}`);
     }
 };
 
 export const SendApplicationAcceptedEmail = async (email, applicantName, jobTitle, companyName) => {
-    const msg = {
-        to: email,
-        from: sender,
-        subject: 'Your Application Has Been Accepted',
-        html: APPLICATION_ACCEPTED_TEMPLATE
-            .replace("{applicantName}", applicantName)
-            .replace("{jobTitle}", jobTitle)
-            .replace("{companyName}", companyName),
-        category: "Application Accepted",
-    };
-
     try {
-        await sgMail.send(msg);
+        await transporter.sendMail({
+            from: `"${sender.name}" <${sender.email}>`,
+            to: email,
+            subject: 'Your Application Has Been Accepted - PROFYLE',
+            html: APPLICATION_ACCEPTED_TEMPLATE
+                .replace("{applicantName}", applicantName)
+                .replace("{jobTitle}", jobTitle)
+                .replace("{companyName}", companyName),
+        });
         console.log(`Application accepted email sent to: ${email}`);
     } catch (error) {
-        console.error("Error sending application accepted email", error);
+        console.error("Error sending application accepted email:", error.message);
         throw new Error(`Error sending application accepted email: ${error.message}`);
     }
 };
 
 export const SendApplicationRejectedEmail = async (email, applicantName, jobTitle, companyName) => {
-    const msg = {
-        to: email,
-        from: sender,
-        subject: 'Update on Your Application',
-        html: APPLICATION_REJECTED_TEMPLATE
-            .replace("{applicantName}", applicantName)
-            .replace("{jobTitle}", jobTitle)
-            .replace("{companyName}", companyName),
-        category: "Application Rejected",
-    };
-
     try {
-        await sgMail.send(msg);
+        await transporter.sendMail({
+            from: `"${sender.name}" <${sender.email}>`,
+            to: email,
+            subject: 'Update on Your Application - PROFYLE',
+            html: APPLICATION_REJECTED_TEMPLATE
+                .replace("{applicantName}", applicantName)
+                .replace("{jobTitle}", jobTitle)
+                .replace("{companyName}", companyName),
+        });
         console.log(`Application rejected email sent to: ${email}`);
     } catch (error) {
-        console.error("Error sending application rejected email", error);
+        console.error("Error sending application rejected email:", error.message);
         throw new Error(`Error sending application rejected email: ${error.message}`);
     }
 };
