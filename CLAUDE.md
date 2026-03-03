@@ -245,6 +245,18 @@ docs(readme): update env vars documentation
 
 ---
 
+## Règle CLAUDE.md — Mise à jour obligatoire
+
+**Après chaque étape ou tâche complétée, mettre à jour ce fichier :**
+- Déplacer l'item de `📋 À faire` vers `✅ Complété`
+- Mettre à jour la section `🔄 En cours`
+- Ajouter les erreurs rencontrées + solutions dans la section dédiée
+- Ajouter les nouvelles commandes découvertes dans la référence
+
+Cette mise à jour se fait **avant le commit final** de chaque feature branch.
+
+---
+
 ## Règles de travail (notre méthode)
 
 1. **Expliquer avant d'exécuter** — chaque commande doit être comprise avant d'être lancée
@@ -259,7 +271,7 @@ docs(readme): update env vars documentation
 
 ## État d'avancement
 
-### ✅ Complété
+### ✅ Complété — `feat/global-config` (mergé dans main)
 - [x] Réécriture backend : Express → NestJS 11 + TypeScript
 - [x] Setup ConfigModule avec validation Joi de toutes les env vars
 - [x] Connexion MongoDB via MongooseModule
@@ -272,10 +284,11 @@ docs(readme): update env vars documentation
 - [x] Build propre : `npm run build` sans erreurs
 
 ### 🔄 En cours
-- [ ] `feat/global-config` : commit + push + PR → main
+- [ ] `feat/auth` — Module auth : JWT, refresh tokens, email verification, bcrypt
 
 ### 📋 À faire (dans l'ordre)
-- [ ] `feat/auth` — Module auth : JWT, refresh tokens, email verification, bcrypt
+- [ ] ~~`feat/auth`~~ → en cours (voir section 🔄)
+- [ ] `feat/users` — Module users : profils candidat/recruteur, upload avatar S3
 - [ ] `feat/users` — Module users : profils candidat/recruteur, upload avatar S3
 - [ ] `feat/companies` — Module companies : CRUD entreprises
 - [ ] `feat/jobs` — Module jobs : CRUD offres, filtres, pagination
