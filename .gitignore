@@ -31,5 +31,6 @@ backend/generated/
 backend/coverage/
 
 # Local history and project docs
+CLAUDE-CODE/
 CLAUDE-CODE-CHAT-HISTORY/
 RAPPORT-LATEX/
