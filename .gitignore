@@ -25,5 +25,6 @@ dist-ssr
 .env
 
 # Local history and docs
+CLAUDE-CODE/
 CLAUDE-CODE-CHAT-HISTORY/
 RAPPORT-LATEX/

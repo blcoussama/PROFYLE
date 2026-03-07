@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import configuration from './config/configuration';
 import { validationSchema } from './config/validation.schema';
 import { PrismaModule } from './database/prisma/prisma.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -30,6 +31,9 @@ import { PrismaModule } from './database/prisma/prisma.module';
 
     // PostgreSQL connection via Prisma (global — injectable in any module)
     PrismaModule,
+
+    // Feature modules
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

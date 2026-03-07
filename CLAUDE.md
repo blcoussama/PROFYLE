@@ -41,6 +41,7 @@ Il démontre :
 | NestJS | 11 | Framework | DI natif, modules, decorators, Swagger intégré |
 | TypeScript | 5 | Langage | Type safety, autocomplétion, maintenabilité |
 | Prisma | 7 | ORM PostgreSQL | Schema-first, types auto-générés, migrations propres |
+| @prisma/adapter-pg + pg | — | Driver PostgreSQL | Adaptateur obligatoire Prisma 7 — connexion TCP via `PrismaPg` |
 | Mongoose | 9 | ODM MongoDB | Flexible, schemas dynamiques |
 | MongoDB | — | DB documents | Users, Messages (schéma flexible) |
 | PostgreSQL | — | DB relationnelle | Companies, Jobs, Applications, SavedJobs (ACID, relations) |
@@ -106,7 +107,7 @@ Pas d'accès DB direct dans les controllers.
 
 ### Module Resolution
 - `module: commonjs` (pas nodenext) — compatibilité maximale avec npm packages
-- Import Prisma client : `from '../../../generated/prisma/client'` (Prisma 7 génère `client.ts`, pas `index.ts`)
+- Import Prisma client : `from '@prisma/client'` (générateur `prisma-client-js` → génère dans `node_modules/.prisma/client/`, CJS compatible)
 
 ---
 
@@ -129,9 +130,6 @@ PROFYLE/
 │   │   └── main.ts                   ← Helmet + cookies + CORS + Swagger + ValidationPipe
 │   ├── prisma/
 │   │   └── schema.prisma             ← Schéma PostgreSQL (4 tables + 1 enum)
-│   ├── generated/
-│   │   └── prisma/                   ← Client TypeScript auto-généré (gitignored)
-│   │       └── client.ts             ← Point d'entrée du client Prisma
 │   ├── test/                         ← Tests e2e NestJS
 │   ├── .env                          ← Variables réelles (gitignored)
 │   ├── .env.example                  ← Template (commité)
@@ -259,7 +257,7 @@ docs(readme): update env vars documentation
 
 ## État d'avancement
 
-### ✅ Complété
+### ✅ Complété — `feat/global-config` (mergé dans main)
 - [x] Réécriture backend : Express → NestJS 11 + TypeScript
 - [x] Setup ConfigModule avec validation Joi de toutes les env vars
 - [x] Connexion MongoDB via MongooseModule
@@ -268,14 +266,46 @@ docs(readme): update env vars documentation
 - [x] Configuration main.ts : Helmet, CORS, ValidationPipe, Swagger, cookieParser
 - [x] `.env.example` complet
 - [x] Fix tsconfig : commonjs (compatibilité packages npm)
-- [x] Fix import Prisma 7 : `generated/prisma/client` (pas d'index.ts en Prisma 7)
+- [x] Fix Prisma 7 + NestJS CJS : générateur `prisma-client-js` → import depuis `'@prisma/client'` (évite ESM `import.meta.url` runtime error)
 - [x] Build propre : `npm run build` sans erreurs
 
+### ✅ Complété — `feat/auth` (build ✓, Swagger tests ✓)
+- [x] Installation packages : `@nestjs/jwt`, `@nestjs/passport`, `passport`, `passport-jwt`, `nodemailer`
+- [x] `modules/users/schemas/user.schema.ts` — Mongoose User model (isEmailVerified, tokens, refreshToken hashé)
+- [x] DTOs : `signup`, `login`, `verify-email`, `forgot-password`, `reset-password`
+- [x] `email.service.ts` — Nodemailer SMTP (vérification email + reset password)
+- [x] `auth.service.ts` — Logique métier complète : signup, verifyEmail, login, refresh, logout, forgotPassword, resetPassword
+- [x] `jwt-access.strategy.ts` — Extrait JWT depuis header Authorization Bearer
+- [x] `jwt-refresh.strategy.ts` — Extrait refresh token depuis cookie httpOnly
+- [x] `jwt-auth.guard.ts` + `jwt-refresh.guard.ts`
+- [x] `common/decorators/current-user.decorator.ts`
+- [x] `auth.controller.ts` — 7 endpoints : POST signup/verify-email/login/refresh/logout/forgot-password/reset-password
+- [x] `auth.module.ts` — assemblage complet
+- [x] Build `npm run build` sans erreurs
+- [x] Tests Swagger UI — 7 endpoints validés end-to-end : signup ✅ verify-email ✅ login ✅ refresh ✅ logout ✅ forgot-password ✅ reset-password ✅
+
+### ✅ Complété — Documentation CLAUDE-CODE/explanations-backend/
+- [x] `INDEX.md` — table des matières + ordre d'exécution + séparation natifs/créés
+- [x] `00-SETUP-ET-DEPENDANCES.md` — NestJS CLI, tous les packages installés, prisma init, stratégie branches
+- [x] `01-FICHIERS-RACINE.md` — tsconfig, package.json, eslint, prettier
+- [x] `02-ENVIRONMENT-ET-PRISMA.md` — .env, prisma.config.ts, schema.prisma
+- [x] `03-CONFIG-MODULE.md` — configuration.ts, validation.schema.ts
+- [x] `04-BOOTSTRAP.md` — main.ts, app.module.ts (app.get, CORS, ValidationPipe)
+- [x] `05-APP-DEFAULTS-ET-DATABASE.md` — app.controller/service, Jest, prisma.service/module, pool connexions
+- [x] `06-AUTH-MODULE.md` — tous les fichiers auth (22 fichiers)
+- [x] `07-GIT-ET-GITHUB.md` — branches, workflow, commandes
+- [x] `08-SWAGGER.md` — OpenAPI, DocumentBuilder, decorators, utilisation UI
+- [x] `09-MONGOOSE-VS-PRISMA.md` — Mongoose vs Prisma : qui parle à quelle base, schéma visuel
+- [x] `10-COMMANDES-REFERENCE.md` — mongosh, psql, Prisma CLI, npm scripts, Git, npm install
+- [x] `11-TESTS.md` — Les 3 types de tests : Swagger manuel, Jest unitaires, Jest e2e (complet)
+- [x] `12-EMAIL-NODEMAILER.md` — Nodemailer vs services SMTP, Gmail App Password
+- [x] `13-NESTJS-LIFECYCLE.md` — onModuleInit, onModuleDestroy, connexions zombie
+
 ### 🔄 En cours
-- [ ] `feat/global-config` : commit + push + PR → main
+- [ ] `feat/auth` — Prochaine étape : écrire `auth.service.spec.ts` (tests TDD) puis commit + PR
 
 ### 📋 À faire (dans l'ordre)
-- [ ] `feat/auth` — Module auth : JWT, refresh tokens, email verification, bcrypt
+- [ ] `feat/auth` — Tests unitaires `auth.service.spec.ts` + commit + PR → main
 - [ ] `feat/users` — Module users : profils candidat/recruteur, upload avatar S3
 - [ ] `feat/companies` — Module companies : CRUD entreprises
 - [ ] `feat/jobs` — Module jobs : CRUD offres, filtres, pagination
@@ -337,18 +367,29 @@ export class CreateJobDto {
 
 | Erreur | Cause | Solution |
 |---|---|---|
-| `Cannot find module '../../../generated/prisma'` | Prisma 7 génère `client.ts` pas `index.ts` | Importer `'../../../generated/prisma/client'` |
+| `exports is not defined in ES module scope` dans `dist/generated/prisma/client.js` | `prisma-client` (nouveau générateur Prisma 7) génère du TypeScript ESM (`import.meta.url`) incompatible avec `module: commonjs` | Changer le générateur vers `prisma-client-js` dans `schema.prisma` → importer depuis `'@prisma/client'` |
+| `PrismaClientInitializationError: needs to be constructed with valid PrismaClientOptions` | Prisma 7 supprime `url` du schema — le runtime client n'a pas de connexion DB | Installer `@prisma/adapter-pg` + `pg`, passer `new PrismaPg({ connectionString })` au `super({ adapter })` dans `PrismaService` |
 | `cookieParser is not callable` | `import * as` incompatible avec `nodenext` + CommonJS | `import cookieParser from 'cookie-parser'` |
 | `module: nodenext` incompatible | Packages npm pas tous ESM-ready | Changer tsconfig vers `module: commonjs` |
 | `git commit` sans effet | `git add` oublié avant le commit | Toujours stager avant de commiter |
+| `expiresIn: Type 'string' not assignable to 'StringValue'` | `@nestjs/jwt` attend le type `StringValue` de la lib `ms`, pas `string` générique | Importer `StringValue` depuis `ms` : `import type { StringValue } from 'ms'` puis `config.get<StringValue>('jwt.accessExpiry')` |
+| `secretOrKey: string \| undefined not assignable to string \| Buffer` | `config.get<string>()` peut théoriquement retourner `undefined` | Ajouter `!` non-null assertion : `config.get<string>('jwt.accessSecret')!` |
+| Strategy overload TypeScript error (`passReqToCallback`) | TypeScript ne résout pas le bon overload `StrategyOptionsWithRequest` | Utiliser `passReqToCallback: true as const` |
+| ESLint `no-unsafe-assignment` sur `request.user` dans le decorator | `getRequest()` retourne `any` | `getRequest<Request>()` + caster `user` en `Record<string, unknown>` |
+| ESLint `no-unsafe-assignment` sur `req.cookies.RefreshToken` | `req.cookies` est typé `any` par express | Caster : `(req.cookies as Record<string, string>)['RefreshToken']` |
+| ESLint `no-floating-promises` sur `bootstrap()` dans `main.ts` | Promise non-awaited et non-gérée | Préfixer avec `void` : `void bootstrap()` |
+| ESLint `no-unnecessary-type-assertion` + `no-unsafe-assignment` sur `as any` dans generateTokens | `config.get()` sans type param retourne déjà `any`, donc `as any` est redondant | Utiliser `config.get<StringValue>()` — supprime le besoin du cast et des eslint-disable |
 
 ---
 
 ## Notes importantes Prisma 7
 
-- **Pas d'`index.ts`** dans le dossier généré → importer depuis `./generated/prisma/client`
-- **`prisma.config.ts`** (nouveau en Prisma 6+) → gère la connexion DB séparément du schema
-- **`generator client { provider = "prisma-client" }`** → nouveau nom du générateur (était `"prisma-client-js"`)
-- **`output = "../generated/prisma"`** → client généré hors de `node_modules`, gitignored
+- **Utiliser `prisma-client-js`** (pas `prisma-client`) avec NestJS `module: commonjs` — le nouveau `prisma-client` génère du TypeScript ESM incompatible avec CJS
+- **`provider = "prisma-client-js"`** → génère dans `node_modules/.prisma/client/`, importé via `'@prisma/client'`
+- **`url` SUPPRIMÉ du schema** — Prisma 7 interdit `url = env(...)` dans `schema.prisma`. À la place :
+  - CLI (migrations) → `datasource.url` dans `prisma.config.ts`
+  - Runtime → passer un **adapter** au constructeur : `new PrismaClient({ adapter })`
+- **`@prisma/adapter-pg` + `pg`** → adapter obligatoire pour PostgreSQL : `new PrismaPg({ connectionString: process.env['DATABASE_URL'] })`
+- **`prisma.config.ts`** (nouveau en Prisma 6+) → gère la connexion DB pour le CLI uniquement
 - **`npx prisma generate`** → génère les types TypeScript sans besoin de connexion DB
 - **`npx prisma migrate dev`** → a besoin d'une vraie connexion PostgreSQL
