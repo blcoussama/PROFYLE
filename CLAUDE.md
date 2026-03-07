@@ -243,6 +243,18 @@ docs(readme): update env vars documentation
 
 ---
 
+## Règle CLAUDE.md — Mise à jour obligatoire
+
+**Après chaque étape ou tâche complétée, mettre à jour ce fichier :**
+- Déplacer l'item de `📋 À faire` vers `✅ Complété`
+- Mettre à jour la section `🔄 En cours`
+- Ajouter les erreurs rencontrées + solutions dans la section dédiée
+- Ajouter les nouvelles commandes découvertes dans la référence
+
+Cette mise à jour se fait **avant le commit final** de chaque feature branch.
+
+---
+
 ## Règles de travail (notre méthode)
 
 1. **Expliquer avant d'exécuter** — chaque commande doit être comprise avant d'être lancée
@@ -302,10 +314,9 @@ docs(readme): update env vars documentation
 - [x] `13-NESTJS-LIFECYCLE.md` — onModuleInit, onModuleDestroy, connexions zombie
 
 ### 🔄 En cours
-- [ ] `feat/auth` — Prochaine étape : écrire `auth.service.spec.ts` (tests TDD) puis commit + PR
+- [ ] `feat/users` — Module users : profils candidat/recruteur, upload avatar S3
 
 ### 📋 À faire (dans l'ordre)
-- [ ] `feat/auth` — Tests unitaires `auth.service.spec.ts` + commit + PR → main
 - [ ] `feat/users` — Module users : profils candidat/recruteur, upload avatar S3
 - [ ] `feat/companies` — Module companies : CRUD entreprises
 - [ ] `feat/jobs` — Module jobs : CRUD offres, filtres, pagination
