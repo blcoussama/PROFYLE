@@ -312,12 +312,30 @@ Cette mise à jour se fait **avant le commit final** de chaque feature branch.
 - [x] `11-TESTS.md` — Les 3 types de tests : Swagger manuel, Jest unitaires, Jest e2e (complet)
 - [x] `12-EMAIL-NODEMAILER.md` — Nodemailer vs services SMTP, Gmail App Password
 - [x] `13-NESTJS-LIFECYCLE.md` — onModuleInit, onModuleDestroy, connexions zombie
+- [x] `14-USERS-MODULE.md` — Module Users complet : profils, S3, AWS IAM/Billing, presigned URLs, Jest 26 tests
+
+### ✅ Complété — `feat/users` (build ✓, Swagger tests ✓, Jest 26/26 ✓)
+- [x] Installation packages : `@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner`, `uuid`, `@types/uuid`, `@types/multer`
+- [x] `user.schema.ts` — étendu : classes `Experience` + `Education` (@Schema _id:false) + champs profil communs + candidat + recruteur
+- [x] `dto/update-candidate-profile.dto.ts` — `ExperienceDto`, `EducationDto`, `UpdateCandidateProfileDto` (ValidateNested + @Type)
+- [x] `dto/update-recruiter-profile.dto.ts` — `UpdateRecruiterProfileDto`
+- [x] `users.service.ts` — S3Client dans constructeur, 7 méthodes : getMyProfile, updateMyProfile, uploadAvatar, deleteAvatar, uploadCv, getCvPresignedUrl, deleteCv
+- [x] `users.controller.ts` — 7 endpoints, @UseGuards(JwtAuthGuard) au niveau classe, FileInterceptor pour uploads
+- [x] `users.module.ts` — assemblage + exports UsersService
+- [x] `app.module.ts` — ajout UsersModule
+- [x] AWS S3 setup : bucket `profyle-uploads-820242925162-eu-west-3-an` (Paris, Account Regional namespace)
+- [x] AWS IAM : IAM Admin `oussama-admin` (MFA activé) + IAM App User `profyle-s3-user` (inline policy moindre privilège)
+- [x] Bucket policy : public uniquement sur `avatars/*`, CVs privés via presigned URLs
+- [x] AWS Billing : accès billing activé pour IAM + Zero Spend Budget `profyle-zero-spend`
+- [x] Build `npm run build` sans erreurs, ESLint 0 erreurs
+- [x] Tests Swagger UI — 7 endpoints validés : GET me ✅ PATCH me ✅ POST avatar ✅ DELETE avatar ✅ POST cv ✅ GET cv-url ✅ DELETE cv ✅
+- [x] Jest unitaires — 26/26 tests passent
 
 ### 🔄 En cours
-- [ ] `feat/users` — Module users : profils candidat/recruteur, upload avatar S3
+- [ ] Commit + PR + merge `feat/users` → `main`
 
 ### 📋 À faire (dans l'ordre)
-- [ ] `feat/users` — Module users : profils candidat/recruteur, upload avatar S3
+- [ ] Commit + PR + merge `feat/users` → `main`
 - [ ] `feat/companies` — Module companies : CRUD entreprises
 - [ ] `feat/jobs` — Module jobs : CRUD offres, filtres, pagination
 - [ ] `feat/applications` — Module applications : postuler, statuts, TTL

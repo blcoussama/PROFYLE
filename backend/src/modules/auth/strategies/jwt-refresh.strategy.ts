@@ -25,7 +25,9 @@ export class JwtRefreshStrategy extends PassportStrategy(
 
   // Called after signature verified — req.user gets { userId, refreshToken }
   validate(req: Request, payload: { sub: string }) {
-    const refreshToken = (req.cookies as Record<string, string>)?.['RefreshToken'];
+    const refreshToken = (req.cookies as Record<string, string>)?.[
+      'RefreshToken'
+    ];
     if (!refreshToken) throw new UnauthorizedException('Refresh token missing');
 
     // Return both userId and the raw token — service will compare against DB hash
